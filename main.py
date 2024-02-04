@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 
 def format_date(date: str) -> str:
@@ -9,7 +9,7 @@ def format_date(date: str) -> str:
     return date_object.strftime("%Y-%m-%d")
 
 
-def get_articles() -> Dict[str, str]:
+def get_articles() -> List[Dict[str, str]]:
     article_list = []
     url = "https://www.freecodecamp.org/news/"
     page = requests.get(url).text
@@ -30,5 +30,10 @@ def get_articles() -> Dict[str, str]:
     return article_list
 
 
-fcc = get_articles()
-print(fcc[0])
+def main():
+    fcc = get_articles()
+    print(fcc[0])
+
+
+if __name__ == "__main__":
+    main()
