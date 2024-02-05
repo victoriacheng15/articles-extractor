@@ -1,31 +1,33 @@
-from utils.extractors import extract_fcc_articles
-from utils.extractors import get_articles
 from config.setup_google_sheet import setup_google_sheet
-
-
-header = ["date", "title", "author", "link", "category"]
-all_articles = []
-
-worksheet = setup_google_sheet()
-
-existing_header = worksheet.row_values(1)
-if existing_header != header:
-    worksheet.append_row(header)
-
+from utils.extractors import extract_fcc_articles, extract_substack_articles
+from utils.extractors import get_articles
+from utils.sheet import check_existing_header, get_all_titles
+from data.providers import freecodecamp, substack
 
 def main():
+    all_articles = []
+    header = ["date", "title", "author", "link", "category"]
+    worksheet = setup_google_sheet()
+    existing_title = get_all_titles(worksheet)
+
+    check_existing_header(worksheet, header)
+
     get_articles(
-        "https://www.freecodecamp.org/news/",
-        "post-card",
-        extract_fcc_articles,
-        all_articles,
+        freecodecamp["url"], freecodecamp["class"], extract_fcc_articles, all_articles
     )
-    for article in all_articles:
-        existing_article = worksheet.find(article["title"], in_column=2)
-        if not existing_article:
-            article_values = [article[key] for key in header]
-            worksheet.append_row(article_values)
+    for url in substack["urls"]:
+        get_articles(url, substack["class"], extract_substack_articles, all_articles)
+
+    filtered_articles = [
+        article for article in all_articles if article[1] not in existing_title
+    ]
+
+    for article in filtered_articles:
+        worksheet.append_row(list(article))
+
 
 
 if __name__ == "__main__":
+    print("Starting the process!")
     main()
+    print("The process is coimpleted")
