@@ -1,38 +1,41 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-from typing import Dict, List
+import os
+import gspread
+from google.oauth2.service_account import Credentials
+from dotenv import load_dotenv
+from utils.extractors import extract_fcc_articles
+from utils.extractors import get_articles
 
+load_dotenv()
+SHEET_ID = os.environ.get("SHEET_ID")
 
-def format_date(date: str) -> str:
-    date_object = datetime.strptime(date, "%a %b %d %Y %H:%M:%S GMT%z")
-    return date_object.strftime("%Y-%m-%d")
+scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+client = gspread.authorize(creds)
+sheet = client.open_by_key(SHEET_ID)
+worksheet = sheet.sheet1
 
+header = ["date", "title", "author", "link", "category"]
+existing_header = worksheet.row_values(1)
 
-def get_articles() -> List[Dict[str, str]]:
-    article_list = []
-    url = "https://www.freecodecamp.org/news/"
-    page = requests.get(url).text
-    doc = BeautifulSoup(page, "html.parser")
+if existing_header != header:
+    worksheet.append_row(header)
 
-    articles = doc.find_all(class_="post-card")
-    for article in articles:
-        obj = {}
-        obj["title"] = article.find("h2").get_text().strip()
-        href = article.find("a").get("href")
-        obj["link"] = f"{url[:-6:]}{href}"
-        author_items = article.find("footer")
-        obj["author"] = author_items.li.span.a.get_text().strip()
-        date = author_items.li.span.time.get("datetime").split(" (")[0]
-        obj["date"] = format_date(date)
-        obj["category"] = "freeCodeCamp"
-        article_list.append(obj)
-    return article_list
+all_articles = []
 
 
 def main():
-    fcc = get_articles()
-    print(fcc[0])
+    get_articles(
+        "https://www.freecodecamp.org/news/",
+        "post-card",
+        extract_fcc_articles,
+        all_articles,
+    )
+    print(all_articles)
+    for article in all_articles:
+        existing_article = worksheet.find(article["title"], in_column=2)
+        if not existing_article:
+            article_values = [article[key] for key in header]
+            worksheet.append_row(article_values)
 
 
 if __name__ == "__main__":
