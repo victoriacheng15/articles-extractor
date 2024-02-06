@@ -12,11 +12,16 @@ def extract_fcc_articles(article):
     date = format_date(date)
     return date, title, author, link, "freeCodeCamp"
 
+
 def extract_substack_articles(article):
     all_element = article.find_all("a")
     title = all_element[0].get_text()
     link = all_element[0].get("href")
-    author = all_element[-1].get_text() if len(all_element) == 3 else "Cannot find author name"
+    author = (
+        all_element[-1].get_text()
+        if len(all_element) == 3
+        else "Cannot find author name"
+    )
     date = article.find("time").get("datetime").split("T")[0]
     return date, title, author, link, "substack"
 
