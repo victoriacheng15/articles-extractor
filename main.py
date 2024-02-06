@@ -5,6 +5,7 @@ from utils.format_date import current_time
 from utils.sheet import check_existing_header, get_all_titles
 from data.providers import freecodecamp, substack
 
+
 def main():
     all_articles = []
     header = ["date", "title", "author", "link", "category"]
@@ -29,7 +30,6 @@ def main():
         main_sheet.append_row(list(article))
 
     main_sheet.sort((1, "des"))
-
 
 
 if __name__ == "__main__":
