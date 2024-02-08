@@ -11,7 +11,7 @@ def main():
     header = ["date", "title", "author", "link", "category", "read?"]
 
     main_sheet = setup_google_sheet()
-    existing_title = get_all_titles(main_sheet)
+    existing_titles = get_all_titles(main_sheet)
     check_existing_header(main_sheet, header)
 
     get_articles(
@@ -19,7 +19,7 @@ def main():
         freecodecamp["class"],
         extract_fcc_articles,
         all_articles,
-        existing_title,
+        existing_titles,
     )
 
     for url in substack["urls"]:
@@ -28,7 +28,7 @@ def main():
             substack["class"],
             extract_substack_articles,
             all_articles,
-            existing_title,
+            existing_titles,
         )
 
     for article in all_articles:
