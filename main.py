@@ -9,17 +9,27 @@ from data.providers import freecodecamp, substack
 def main():
     all_articles = []
     header = ["date", "title", "author", "link", "category", "read?"]
-    
+
     main_sheet = setup_google_sheet()
     existing_title = get_all_titles(main_sheet)
     check_existing_header(main_sheet, header)
 
     get_articles(
-        freecodecamp["url"], freecodecamp["class"], extract_fcc_articles, all_articles, existing_title
+        freecodecamp["url"],
+        freecodecamp["class"],
+        extract_fcc_articles,
+        all_articles,
+        existing_title,
     )
 
     for url in substack["urls"]:
-        get_articles(url, substack["class"], extract_substack_articles, all_articles, existing_title)
+        get_articles(
+            url,
+            substack["class"],
+            extract_substack_articles,
+            all_articles,
+            existing_title,
+        )
 
     for article in all_articles:
         print(f"===> adding {article[1]}!")
