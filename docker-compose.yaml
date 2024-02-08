@@ -1,8 +1,8 @@
 version: '3'
 services:
   app:
-    image: articles-scrap
-    container_name: scrapper
+    image: articles-extractor
+    container_name: extractor
     build:
       context: .
       dockerfile: Dockerfile
