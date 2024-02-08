@@ -9,9 +9,9 @@ from data.providers import freecodecamp, substack
 def main():
     all_articles = []
     header = ["date", "title", "author", "link", "category"]
+    
     main_sheet = setup_google_sheet()
     existing_title = get_all_titles(main_sheet)
-
     check_existing_header(main_sheet, header)
 
     get_articles(
@@ -26,7 +26,7 @@ def main():
     ]
 
     for article in filtered_articles:
-        print(f"==> {article[1]} is adding now!")
+        print(f"===> adding {article[1]}!")
         main_sheet.append_row(list(article))
 
     main_sheet.sort((1, "des"))
