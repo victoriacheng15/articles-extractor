@@ -26,10 +26,10 @@ def extract_substack_articles(article):
     return date, title, author, link, "substack"
 
 
-def get_articles(url, class_name, extract_func, all_articles, existing_title):
+def get_articles(url, class_name, extract_func, all_articles, existing_titles):
     doc = get_page(url)
     articles = doc.find_all(class_=class_name)
     for article in articles:
-        extracted_article = extract_func(article)
-        if extracted_article[1] not in existing_title:
-            all_articles.append(extracted_article)
+        extracted_article_info = extract_func(article)
+        if extracted_article_info[1] not in existing_titles:
+            all_articles.append(extracted_article_info)
