@@ -2,7 +2,7 @@
 
 This application is created to retrieve articles from freeCodeCamp and Substack, and subsequently transfer all pertinent article details to a Google Sheet.
 
-## Tech Stack
+## Tech Stacks
 
 ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white) ![Google Sheet API](https://img.shields.io/badge/Google%20Sheets-34A853.svg?style=for-the-badge&logo=Google-Sheets&logoColor=white) ![docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white) ![Raspberry PI](https://img.shields.io/badge/Raspberry%20Pi-A22846.svg?style=for-the-badge&logo=Raspberry-Pi&logoColor=white)
 
