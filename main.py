@@ -1,39 +1,22 @@
-from config.setup_google_sheet import setup_google_sheet
+from utils.sheet import main_sheet, check_existing_header, send_articles_sheet
 from utils.extractors import extract_fcc_articles, extract_substack_articles
 from utils.extractors import get_articles
 from utils.format_date import current_time
-from utils.sheet import check_existing_header, get_all_titles
 from data.providers import freecodecamp, substack
 
 
 def main():
-    all_articles = []
-    header = ["date", "title", "author", "link", "category", "read?"]
+    check_existing_header()
 
-    main_sheet = setup_google_sheet()
-    existing_titles = get_all_titles(main_sheet)
-    check_existing_header(main_sheet, header)
+    fcc_url = freecodecamp["url"]
+    fcc_class = freecodecamp["class"]
+    for article_info in get_articles(fcc_url, fcc_class, extract_fcc_articles):
+        send_articles_sheet(article_info)
 
-    get_articles(
-        freecodecamp["url"],
-        freecodecamp["class"],
-        extract_fcc_articles,
-        all_articles,
-        existing_titles,
-    )
-
+    ss_class = substack["class"]
     for url in substack["urls"]:
-        get_articles(
-            url,
-            substack["class"],
-            extract_substack_articles,
-            all_articles,
-            existing_titles,
-        )
-
-    for article in all_articles:
-        print(f"===> adding {article[1]}!")
-        main_sheet.append_row(list(article))
+        for article_info in get_articles(url, ss_class, extract_substack_articles):
+            send_articles_sheet(article_info)
 
     main_sheet.sort((1, "des"))
 
