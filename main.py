@@ -19,7 +19,7 @@ def main(time):
             send_articles_sheet(article_info)
 
     main_sheet.sort((1, "des"))
-    main_sheet.update_cell(1,7, f"Updated at\n{time}")
+    main_sheet.update_cell(1, 7, f"Updated at\n{time}")
 
 
 if __name__ == "__main__":
