@@ -5,7 +5,7 @@ from utils.format_date import current_time
 from data.providers import freecodecamp, substack
 
 
-def main():
+def main(time):
     check_existing_header()
 
     fcc_url = freecodecamp["url"]
@@ -19,12 +19,13 @@ def main():
             send_articles_sheet(article_info)
 
     main_sheet.sort((1, "des"))
+    main_sheet.update_cell(1,7, f"Updated at\n{time}")
 
 
 if __name__ == "__main__":
-    current = current_time()
-    print(f"The process is starting at {current}")
+    updated_time = current_time()
+    print(f"The process is starting at {updated_time}")
     print()
-    main()
+    main(updated_time)
     print()
     print("The process is completed")
