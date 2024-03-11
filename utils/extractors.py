@@ -3,6 +3,15 @@ from utils.format_date import format_date
 from utils.sheet import existing_titles
 
 
+def format_authors(author_elements):
+    names = [name.get_text() for name in author_elements]
+
+    if len(names) == 0:
+        return "No author found"
+
+    return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} and {names[-1]}"
+
+
 def extract_fcc_articles(article):
     title = article.find("h2").get_text().strip()
     href = article.find("a").get("href")
@@ -15,14 +24,10 @@ def extract_fcc_articles(article):
 
 
 def extract_substack_articles(article):
-    all_element = article.find_all("a")
-    title = all_element[0].get_text()
-    link = all_element[0].get("href")
-    author = (
-        all_element[-1].get_text()
-        if len(all_element) == 3
-        else "Cannot find author name"
-    )
+    title = article.find(attrs={"data-testid": "post-preview-title"}).get_text()
+    link = article.find(attrs={"data-testid": "post-preview-title"}).get("href")
+    author_elements = article.find_all(class_="_link_1o9b1_39")
+    author = format_authors(author_elements)
     date = article.find("time").get("datetime").split("T")[0]
     return date, title, author, link, "substack"
 
