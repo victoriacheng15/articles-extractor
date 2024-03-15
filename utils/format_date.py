@@ -7,4 +7,6 @@ def format_date(date: str) -> str:
 
 
 def current_time():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f").split(".")[0]
+    date = datetime.now().date()
+    time = datetime.now().time().strftime("%H:%M")
+    return date, time

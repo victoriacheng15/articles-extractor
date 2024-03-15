@@ -21,9 +21,9 @@ def main(time):
 
 
 if __name__ == "__main__":
-    updated_time = current_time()
-    print(f"The process is starting at {updated_time}")
+    date, time = current_time()
+    print(f"The process is starting at Updated at {date} - {time}")
     print()
-    main(updated_time)
+    main(f"{date}\n{time}")
     print()
     print("The process is completed")
