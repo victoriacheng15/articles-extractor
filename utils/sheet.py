@@ -39,5 +39,8 @@ existing_titles = get_all_titles()
 
 
 def send_articles_sheet(article_info):
-    print(f"===> adding {article_info[1]}!")
+    date = article_info[0]
+    title = article_info[1]
+    author = article_info[2]
+    print(f"===> adding {title} by {author} at {date}!")
     main_sheet.append_row(list(article_info))
