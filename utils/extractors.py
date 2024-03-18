@@ -30,10 +30,18 @@ def extract_substack_articles(article):
     return date, title, author, link, "substack"
 
 
-def get_articles(url, class_name, extract_func):
-    doc = get_page(url)
-    articles = doc.find_all(class_=class_name)
-    for article in articles:
+def extract_github_articles(article):
+    title = article.find("h2").get_text().strip()
+    link = article.find(class_="Link--primary").get("href")
+    authors = format_authors(
+        article.find_all(class_="d-inline-block Link--primary color-fg-default")
+    )
+    date = article.find("time").get("datetime")
+    return date, title, authors, link, "github"
+
+
+def get_articles(elements, extract_func):
+    for article in elements:
         extracted_article_info = extract_func(article)
         if extracted_article_info[1] not in existing_titles:
             yield extracted_article_info
