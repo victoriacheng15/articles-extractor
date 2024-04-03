@@ -3,7 +3,7 @@ from utils.extractors import (
     extract_fcc_articles,
     extract_substack_articles,
     extract_github_articles,
-    extract_ztm_articles
+    extract_ztm_articles,
 )
 from utils.extractors import get_articles
 from utils.format_date import current_time
