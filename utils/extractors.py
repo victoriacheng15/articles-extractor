@@ -26,7 +26,7 @@ def extract_fcc_articles(article):
 def extract_substack_articles(article):
     title = article.find(attrs={"data-testid": "post-preview-title"}).get_text()
     link = article.find(attrs={"data-testid": "post-preview-title"}).get("href")
-    author_elements = article.find_all(class_="_link_1o9b1_39")
+    author_elements = article.find_all(class_=re.compile("profile-hover-card-target "))
     author = format_authors(author_elements)
     date = article.find("time").get("datetime").split("T")[0]
     return date, title, author, link, "substack"
