@@ -42,8 +42,9 @@ def main(time):
 
 if __name__ == "__main__":
     date, time = current_time()
-    print(f"The process is starting at Updated at {date} - {time}")
+    timestamp = f"{date} - {time}"
+    print(f"The process is starting at Updated at {timestamp}")
     print()
-    main(f"{date}\n{time}")
+    main(f"{timestamp}")
     print()
     print("The process is completed")

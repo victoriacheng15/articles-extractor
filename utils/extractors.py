@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
-from utils.get_page import get_page
-from utils.format_date import format_date
+from utils.format_date import clean_and_convert_date
 from utils.sheet import existing_titles
 
 
@@ -19,7 +18,7 @@ def extract_fcc_articles(article):
     href = article.find("a").get("href")
     link = f"https://www.freecodecamp.org{href}"
     author = article.find(class_="meta-content").a.get_text().strip()
-    date = format_date(article.find("time").get("datetime").split(" (")[0])
+    date = clean_and_convert_date(article.find("time").get("datetime"))
     return date, title, author, link, "freeCodeCamp"
 
 
