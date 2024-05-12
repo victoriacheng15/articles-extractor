@@ -1,3 +1,4 @@
+import re
 from utils.sheet import main_sheet, send_articles_sheet
 from utils.extractors import (
     extract_fcc_articles,
@@ -24,7 +25,7 @@ def main(time):
     for article_info in get_articles(elements, extract_github_articles):
         send_articles_sheet(article_info)
 
-    ss_element = substack["element"]
+    ss_element = re.compile(substack["element"])
     for url in substack["urls"]:
         elements = get_page(url).find_all(class_=ss_element)
         for article_info in get_articles(elements, extract_substack_articles):
