@@ -32,7 +32,7 @@ def extract_substack_articles(article):
 
 
 def extract_github_articles(article):
-    title = article.find("h2").get_text().strip()
+    title = article.find("h3").get_text().strip()
     link = article.find(class_="Link--primary").get("href")
     authors = format_authors(
         article.find_all(class_="d-inline-block Link--primary color-fg-default")
