@@ -43,10 +43,8 @@ def extract_github_articles(article):
 
 def extract_ztm_articles(article):
     pattern = re.compile(r"(\d+)(st|nd|rd|th)")
-    title = article.find("a").get_text()
-    href = article.find(
-        class_="blog-archive-cardstyles__ArticleTitle-sc-1aquqyk-4 hTIlqp"
-    ).get("href")
+    title = article.find("h6").get_text()
+    href = article.find("a").get("href")
     link = f"https://zerotomastery.io/{href}"
     date = (
         article.find(
