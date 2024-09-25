@@ -41,26 +41,6 @@ def extract_github_articles(article):
     return date, title, authors, link, "github"
 
 
-def extract_ztm_articles(article):
-    pattern = re.compile(r"(\d+)(st|nd|rd|th)")
-    title = article.find("h6").get_text()
-    href = article.find("a").get("href")
-    link = f"https://zerotomastery.io/{href}"
-    date = (
-        article.find(
-            "div", class_="post-preview-cardstyles__ArticleMetaData-sc-1wv8f3p-11"
-        )
-        .get_text()
-        .split(" ·")[0]
-    )
-    date_string = pattern.sub(r"\1", date)
-    date = datetime.strptime(date_string, "%B %d, %Y").strftime("%Y-%m-%d")
-    author = article.find(
-        class_="blog-archive-cardstyles__ArticleAuthor-sc-1aquqyk-8 eLuqJA"
-    ).get_text()
-    return date, title, author, link, "ztm"
-
-
 def get_articles(elements, extract_func):
     for article in elements:
         extracted_article_info = extract_func(article)

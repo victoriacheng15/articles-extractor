@@ -4,7 +4,6 @@ from utils.extractors import (
     extract_fcc_articles,
     extract_substack_articles,
     extract_github_articles,
-    extract_ztm_articles,
 )
 from utils.extractors import get_articles
 from utils.format_date import current_time
@@ -30,12 +29,6 @@ def main(time):
         elements = get_page(url).find_all(class_=ss_element)
         for article_info in get_articles(elements, extract_substack_articles):
             send_articles_sheet(article_info)
-
-    ztm_url = ztm["url"]
-    ztm_element = ztm["element"]
-    elements = get_page(ztm_url).find_all(class_=ztm_element)
-    for article_info in get_articles(elements, extract_ztm_articles):
-        send_articles_sheet(article_info)
 
     main_sheet.sort((1, "des"))
     main_sheet.update_cell(1, 7, f"Updated at\n{time}")
