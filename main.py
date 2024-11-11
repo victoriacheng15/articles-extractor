@@ -7,7 +7,7 @@ from utils.extractors import (
 )
 from utils.extractors import get_articles
 from utils.format_date import current_time
-from data.providers import freecodecamp, substack, github, ztm
+from data.providers import freecodecamp, substack, github
 from utils.get_page import get_page
 
 
