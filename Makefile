@@ -10,4 +10,4 @@ run:
 	@python3 main.py
 
 start:
-	@docker compose up --force-recreate && docker compose down
+	@docker compose up --build && docker logs extractor > logs.txt  && docker compose down
