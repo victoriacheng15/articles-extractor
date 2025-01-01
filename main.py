@@ -22,7 +22,6 @@ def add_articles_sheet(provider, provider_url, provider_element):
             send_articles_sheet(article_info)
 
 
-
 def main(time):
     all_providers = get_all_providers()
 
