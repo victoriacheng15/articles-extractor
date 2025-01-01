@@ -1,37 +1,39 @@
-import re
-from utils.sheet import main_sheet, send_articles_sheet
+from utils.sheet import articles_sheet, get_all_providers, send_articles_sheet
+from utils.get_page import get_page
+from utils.extractors import get_articles
 from utils.extractors import (
     extract_fcc_articles,
     extract_substack_articles,
     extract_github_articles,
 )
-from utils.extractors import get_articles
 from utils.format_date import current_time
-from data.providers import freecodecamp, substack, github
-from utils.get_page import get_page
+
+
+def add_articles_sheet(provider, provider_url, provider_element):
+    elements = get_page(provider_url).find_all(provider_element)
+    if provider == "freecodecamp":
+        for article_info in get_articles(elements, extract_fcc_articles):
+            send_articles_sheet(article_info)
+    elif provider == "substack":
+        for article_info in get_articles(elements, extract_substack_articles):
+            send_articles_sheet(article_info)
+    elif provider == "github":
+        for article_info in get_articles(elements, extract_github_articles):
+            send_articles_sheet(article_info)
+
 
 
 def main(time):
-    fcc_url = freecodecamp["url"]
-    fcc_element = freecodecamp["element"]
-    elements = get_page(fcc_url).find_all(fcc_element)
-    for article_info in get_articles(elements, extract_fcc_articles):
-        send_articles_sheet(article_info)
+    all_providers = get_all_providers()
 
-    gh_url = github["url"]
-    gh_element = github["element"]
-    elements = get_page(gh_url).find_all(gh_element)
-    for article_info in get_articles(elements, extract_github_articles):
-        send_articles_sheet(article_info)
+    for provider in all_providers:
+        provider_name = provider["name"]
+        provider_url = provider["url"]
+        provider_element = provider["element"]
+        add_articles_sheet(provider_name, provider_url, provider_element)
 
-    ss_element = re.compile(substack["element"])
-    for url in substack["urls"]:
-        elements = get_page(url).find_all(class_=ss_element)
-        for article_info in get_articles(elements, extract_substack_articles):
-            send_articles_sheet(article_info)
-
-    main_sheet.sort((1, "des"))
-    main_sheet.update_cell(1, 7, f"Updated at\n{time}")
+    articles_sheet.sort((1, "des"))
+    articles_sheet.update_cell(1, 7, f"Updated at\n{time}")
 
 
 if __name__ == "__main__":
