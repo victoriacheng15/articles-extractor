@@ -9,6 +9,7 @@ from utils.extractors import (
 from utils.format_date import current_time
 import re
 
+
 def add_articles_sheet(provider, provider_url, provider_element):
     if provider == "freecodecamp":
         elements = get_page(provider_url).find_all(provider_element)
