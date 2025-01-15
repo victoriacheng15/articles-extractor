@@ -7,17 +7,20 @@ from utils.extractors import (
     extract_github_articles,
 )
 from utils.format_date import current_time
+import re
 
 
 def add_articles_sheet(provider, provider_url, provider_element):
-    elements = get_page(provider_url).find_all(provider_element)
     if provider == "freecodecamp":
+        elements = get_page(provider_url).find_all(provider_element)
         for article_info in get_articles(elements, extract_fcc_articles):
             send_articles_sheet(article_info)
     elif provider == "substack":
+        elements = get_page(provider_url).find_all(class_=re.compile(provider_element))
         for article_info in get_articles(elements, extract_substack_articles):
             send_articles_sheet(article_info)
     elif provider == "github":
+        elements = get_page(provider_url).find_all(provider_element)
         for article_info in get_articles(elements, extract_github_articles):
             send_articles_sheet(article_info)
 
