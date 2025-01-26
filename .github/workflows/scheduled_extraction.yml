@@ -24,7 +24,29 @@ jobs:
           python -m pip install --upgrade pip
           make init
 
+      - name: Create credentials.json
+        run: |
+          echo '${{ secrets.CREDENTIALS }}' > credentials.json
+
+      - name: Verify credentials
+        run: |
+          if [ -f credentials.json ]; then
+            echo "Credentials file exists."
+          else
+            echo "Credentials file not found."
+            exit 1
+          fi
+
       - name: Run Python script
-        run: make run
+        run: make run > log.txt
         env:
           SHEET_ID: ${{ secrets.SHEET_ID }}
+
+      - name: Clean up credentials.json
+        run: rm -f credentials.json
+
+      - name: Upload log file
+        uses: actions/upload-artifact@v4
+        with:
+          name: logger
+          path: log.txt
