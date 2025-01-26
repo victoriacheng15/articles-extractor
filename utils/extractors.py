@@ -17,7 +17,7 @@ def extract_fcc_articles(article):
     title = article.find("h2").get_text().strip()
     href = article.find("a").get("href")
     link = f"https://www.freecodecamp.org{href}"
-    meta_item = article.find("a",class_="meta-item")
+    meta_item = article.find("a", class_="meta-item")
     author = meta_item.get_text().strip() if meta_item is not None else "No Author"
     date = clean_and_convert_date(article.find("time").get("datetime"))
     return date, title, author, link, "freeCodeCamp"
