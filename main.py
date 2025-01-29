@@ -18,17 +18,17 @@ def main(time):
         provider_url = provider["url"]
         provider_element = provider["element"]
 
-        if provider == "freecodecamp":
+        if provider_name == "freecodecamp":
             elements = get_page(provider_url).find_all(provider_element)
             for article_info in get_articles(elements, extract_fcc_articles):
                 send_articles_sheet(article_info)
-        elif provider == "substack":
+        elif provider_name == "substack":
             elements = get_page(provider_url).find_all(
                 class_=re.compile(provider_element)
             )
             for article_info in get_articles(elements, extract_substack_articles):
                 send_articles_sheet(article_info)
-        elif provider == "github":
+        elif provider_name == "github":
             elements = get_page(provider_url).find_all(provider_element)
             for article_info in get_articles(elements, extract_github_articles):
                 send_articles_sheet(article_info)
