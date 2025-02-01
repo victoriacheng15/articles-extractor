@@ -48,5 +48,5 @@ jobs:
       - name: Upload log file
         uses: actions/upload-artifact@v4
         with:
-          name: logger
-          path: log.txt
+          name: extraction-log
+          path: extraction-log-$(date +%Y-%m-%d).txt
