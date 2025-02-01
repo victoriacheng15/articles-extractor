@@ -38,7 +38,10 @@ jobs:
           fi
 
       - name: Run Python script
-        run: make run > log.txt
+        run: |
+          LOG_FILE="extraction-log-$(date +%Y-%m-%d).txt"
+          make run > "$LOG_FILE"
+          echo "Log saved to $LOG_FILE"
         env:
           SHEET_ID: ${{ secrets.SHEET_ID }}
 
