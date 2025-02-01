@@ -3,6 +3,7 @@ name: Ruff Formatting
 on:
   pull_request:
     branches: [main]
+    paths: [main.py, utils/**]
 
 jobs:
   ruff:
