@@ -38,10 +38,12 @@ jobs:
           fi
 
       - name: Run Python script
+        id: generate-log
         run: |
           LOG_FILE="extraction-log-$(date +%Y-%m-%d).txt"
           make run > "$LOG_FILE"
           echo "Log saved to $LOG_FILE"
+          echo "LOG_FILE=$LOG_FILE" >> $GITHUB_ENV
         env:
           SHEET_ID: ${{ secrets.SHEET_ID }}
 
@@ -52,4 +54,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extraction-log
-          path: extraction-log-$(date +%Y-%m-%d).txt
+          path: ${{ steps.generate-log.outputs.LOG_FILE }}
