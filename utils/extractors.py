@@ -47,3 +47,20 @@ def get_articles(elements, extract_func):
         extracted_article_info = extract_func(article)
         if extracted_article_info[1] not in existing_titles:
             yield extracted_article_info
+
+
+def provider_dict(provider_element):
+    return {
+        "freecodecamp": {
+            "element": lambda: provider_element,
+            "extractor": extract_fcc_articles,
+        },
+        "substack": {
+            "element": lambda: re.compile(provider_element),
+            "extractor": extract_substack_articles,
+        },
+        "github": {
+            "element": lambda: provider_element,
+            "extractor": extract_github_articles,
+        },
+    }
