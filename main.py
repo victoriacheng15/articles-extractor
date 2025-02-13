@@ -17,10 +17,14 @@ def main(time):
         handler = provider_handlers.get(provider_name)
 
         if handler:
-            element = handler["element"]()
+            element_args = handler["element"]()
             extractor = handler["extractor"]
 
-            elements = get_page(provider_url).find_all(element)
+            if isinstance(element, dict):
+                elements = get_page(provider_url).find_all(**element_args)
+            else:
+                elements = get_page(provider_url).find_all(element_args)
+
             for article_info in get_articles(elements, extractor):
                 send_articles_sheet(article_info)
         else:
