@@ -56,7 +56,7 @@ def provider_dict(provider_element):
             "extractor": extract_fcc_articles,
         },
         "substack": {
-            "element": lambda: re.compile(provider_element),
+            "element": lambda: {"class_": re.compile(provider_element)},
             "extractor": extract_substack_articles,
         },
         "github": {
