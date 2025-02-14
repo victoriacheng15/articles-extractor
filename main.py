@@ -20,7 +20,7 @@ def main(time):
             element_args = handler["element"]()
             extractor = handler["extractor"]
 
-            if isinstance(element, dict):
+            if isinstance(element_args, dict):
                 elements = get_page(provider_url).find_all(**element_args)
             else:
                 elements = get_page(provider_url).find_all(element_args)
