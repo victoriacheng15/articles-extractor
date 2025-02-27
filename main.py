@@ -6,6 +6,12 @@ from utils.format_date import current_time
 
 
 def main(time):
+    """
+    Main function to extract articles from various providers and update the Google Sheets.
+
+    Args:
+        time (str): The current timestamp to be added to the sheet.
+    """
     all_providers = get_all_providers()
 
     for provider in all_providers:
