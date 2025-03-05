@@ -78,6 +78,44 @@ def extract_github_articles(article):
     return (date, title, authors, link, "github")
 
 
+def extract_shopify_articles(article):
+    """
+    Extracts article information from a Shopify article element.
+
+    Args:
+        article (BeautifulSoup element): The article element to extract information from.
+
+    Returns:
+        tuple: A tuple containing the date, title, author, link, and source of the article.
+    """
+    title_element = article.find(
+        "a",
+        {
+            "class": lambda x: x
+            and "tracking-[-.02em]" in x
+            and "pb-4" in x
+            and "hover:underline" in x,
+            "target": "_self",
+            "rel": "",
+        },
+    )
+    title = title_element.get_text().strip()
+    link = f"https://shopify.engineering{title_element.get("href")}"
+    authors = "N/A"
+    date_element = (
+        article.find(
+            "p",
+            class_="richtext text-body-sm font-normal text-engineering-dark-author-text font-sans",
+        )
+        .get_text()
+        .strip()
+    )
+    before_format_date = datetime.strptime(date_element, "%b %d, %Y")
+    date = before_format_date.strftime("%Y-%m-%d")
+
+    return (date, title, authors, link, "shopify")
+
+
 def get_articles(elements, extract_func):
     """
     Extracts articles from a given provider.
@@ -117,5 +155,9 @@ def provider_dict(provider_element):
         "github": {
             "element": lambda: provider_element,
             "extractor": extract_github_articles,
+        },
+        "shopify": {
+            "element": lambda: provider_element,
+            "extractor": extract_shopify_articles,
         },
     }
