@@ -100,7 +100,8 @@ def extract_shopify_articles(article):
         },
     )
     title = title_element.get_text().strip()
-    link = f"https://shopify.engineering{title_element.get("href")}"
+    blog_address = title_element.get("href")
+    link = f"https://shopify.engineering{blog_address}"
     authors = "N/A"
     date_element = (
         article.find(
