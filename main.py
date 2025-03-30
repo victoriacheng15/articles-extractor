@@ -7,6 +7,7 @@ from utils.format_date import current_time
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 def main(timestamp):
     """
     Extracts articles from various providers and updates the Google Sheet.
@@ -38,6 +39,7 @@ def main(timestamp):
     # Assuming sorting and timestamp updating is still required.
     articles_sheet.sort((1, "des"))
     articles_sheet.update_cell(1, 6, f"Updated at\n{timestamp}")
+
 
 if __name__ == "__main__":
     date, time = current_time()
