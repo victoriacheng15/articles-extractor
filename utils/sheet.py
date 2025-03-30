@@ -59,8 +59,8 @@ def send_articles_sheet(article_info):
     """
     date = article_info[0]
     title = article_info[1]
-    author = article_info[2]
-    print(f"===> adding {title} by {author} at {date}!")
+    link = article_info[2]
+    print(f"==>\n{title} - {date}\n{link}\n")
     articles_sheet.append_row(list(article_info))
 
 
