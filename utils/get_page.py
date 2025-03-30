@@ -12,5 +12,6 @@ def get_page(url):
     Returns:
         BeautifulSoup: A BeautifulSoup object containing the parsed HTML content of the page.
     """
-    page = requests.get(url).text
-    return BeautifulSoup(page, "html.parser")
+    response = requests.get(url)
+    response.raise_for_status()
+    return BeautifulSoup(response.text, "html.parser")
