@@ -1,5 +1,9 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 def get_page(url):
@@ -13,5 +17,7 @@ def get_page(url):
         BeautifulSoup: A BeautifulSoup object containing the parsed HTML content of the page.
     """
     response = requests.get(url)
-    response.raise_for_status()
+    if response.status_code != 200:
+        logger.error(f"Warning: Status {response.status_code} for {url}")
+    # response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser")
