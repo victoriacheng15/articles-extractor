@@ -1,7 +1,10 @@
-.PHONY: init format run up
+.PHONY: init update format run up
 
 init:
 	pip install -r requirements.txt
+
+update:
+	pur -r requirements.txt
 
 format:
 	ruff format main.py utils
