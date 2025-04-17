@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from utils.get_page import PageFetcher 
+from utils.get_page import PageFetcher
 from utils.sheet import articles_sheet, get_all_providers, send_articles_sheet
 from utils.extractors import provider_dict, get_articles
 from utils.format_date import current_time
