@@ -1,6 +1,7 @@
 import logging
+import asyncio
+from utils.get_page import PageFetcher
 from utils.sheet import articles_sheet, get_all_providers, send_articles_sheet
-from utils.get_page import get_page
 from utils.extractors import provider_dict, get_articles
 from utils.format_date import current_time
 
@@ -8,37 +9,57 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def main(timestamp):
-    """
-    Extracts articles from various providers and updates the Google Sheet.
-    """
+async def process_provider(fetcher, provider):
+    """Process a single provider asynchronously"""
+    provider_name = provider["name"]
+    provider_url = provider["url"]
+    provider_element = provider["element"]
+
+    handlers = provider_dict(provider_element)
+    handler = handlers.get(provider_name)
+
+    if not handler:
+        logger.info(f"Unknown provider: {provider_name}")
+        return
+
+    try:
+        soup = await fetcher.get_page(provider_url)
+        if not soup:
+            return
+
+        element_args = handler["element"]()
+        elements = (
+            soup.find_all(**element_args)
+            if isinstance(element_args, dict)
+            else soup.find_all(element_args)
+        )
+
+        for article_info in get_articles(elements, handler["extractor"]):
+            send_articles_sheet(article_info)
+
+    except Exception as e:
+        logger.error(f"Error processing {provider_name}: {str(e)}")
+
+
+async def async_main(timestamp):
+    """Async version of main logic"""
+    fetcher = PageFetcher()
     providers = get_all_providers()
+
+    # Process providers sequentially (one at a time)
     for provider in providers:
-        provider_name = provider["name"]
-        provider_url = provider["url"]
-        provider_element = provider["element"]
+        await process_provider(fetcher, provider)
 
-        handlers = provider_dict(provider_element)
-        handler = handlers.get(provider_name)
-
-        if handler:
-            element_args = handler["element"]()
-            extractor = handler["extractor"]
-
-            # Choose find_all argument format based on element_args type.
-            if isinstance(element_args, dict):
-                elements = get_page(provider_url).find_all(**element_args)
-            else:
-                elements = get_page(provider_url).find_all(element_args)
-
-            for article_info in get_articles(elements, extractor):
-                send_articles_sheet(article_info)
-        else:
-            logger.info(f"Unknown provider: {provider_name}")
-
-    # Assuming sorting and timestamp updating is still required.
+    # Final sheet operations
     articles_sheet.sort((1, "des"))
     articles_sheet.update_cell(1, 6, f"Updated at\n{timestamp}")
+
+    await fetcher.close()
+
+
+def main(timestamp):
+    """Sync wrapper for async code"""
+    asyncio.run(async_main(timestamp))
 
 
 if __name__ == "__main__":

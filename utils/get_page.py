@@ -1,23 +1,40 @@
-import requests
+import httpx
+import asyncio
 import logging
+import time
 from bs4 import BeautifulSoup
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def get_page(url):
-    """
-    Fetches the HTML content of the given URL and parses it using BeautifulSoup.
+class PageFetcher:
+    def __init__(self):
+        self.last_request_time = 0
+        self.request_interval = 1.0
+        self.client = httpx.AsyncClient(timeout=30.0, http2=True)
 
-    Args:
-        url (str): The URL of the page to fetch.
+    async def get_page(self, url: str) -> Optional[BeautifulSoup]:
+        """Fetch and parse a webpage with rate limiting"""
+        # Rate limiting
+        elapsed = time.time() - self.last_request_time
+        if elapsed < self.request_interval:
+            await asyncio.sleep(self.request_interval - elapsed)
 
-    Returns:
-        BeautifulSoup: A BeautifulSoup object containing the parsed HTML content of the page.
-    """
-    response = requests.get(url)
-    if response.status_code != 200:
-        logger.error(f"Warning: Status {response.status_code} for {url}")
-    # response.raise_for_status()
-    return BeautifulSoup(response.text, "html.parser")
+        try:
+            response = await self.client.get(url)
+            self.last_request_time = time.time()
+
+            if response.status_code == 200:
+                return BeautifulSoup(response.text, "html.parser")
+
+            logger.error(f"HTTP {response.status_code} from {url}")
+            return None
+
+        except Exception as e:
+            logger.error(f"Error fetching {url}: {str(e)}")
+            return None
+
+    async def close(self):
+        await self.client.aclose()
