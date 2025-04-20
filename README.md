@@ -1,6 +1,6 @@
 # Article Extractor
 
-A Python application that automatically scrapes articles from freeCodeCamp, Substack, and other sources, then organizes them in Google Sheets.
+Article Extractor is a Python application that automatically scrapes blog articles—such as titles, URLs, and published dates—from platforms like freeCodeCamp, Substack, GitHub Engineering, and Shopify Engineering. The collected data is then organized and stored in a Google Sheet, making it easy to browse, filter, or reference later. This project helps streamline content gathering without needing to visit each site manually.
 
 ## Getting Started
 
@@ -16,16 +16,17 @@ Please refer to the [Wiki](https://github.com/victoriacheng15/articles-extractor
 
 ## Key Features
 
-- **Efficient scraping** using Python generators to minimize memory usage
-- **Automated scheduling** via GitHub Actions (daily runs)
-- **Cross-platform** - Runs on Raspberry Pi, cloud, or local machines
-- **Extensible architecture** for adding new content sources
+- Efficient scraping using Python generators to minimize memory usage
+- Automated daily scheduling via custom GitHub Actions workflow (06:00 UTC)
+- Stores logs and errors as GitHub Action artifacts for transparency and debugging
+- Cross-platform — runs on Raspberry Pi, cloud, or local machines
+- Extensible architecture for adding new content sources
 
 ## What I have learned
 
-I discovered how Python generators can streamline workflows that depend on sequential completion. In my original approach, I collected all articles in an array (all_articles) before processing them, which forced the script to wait until every scrape finished before sending anything to Google Sheets. By refactoring to use generators, each article is processed immediately after it’s scraped, eliminating the need to store everything upfront. This taught me two key things:
+I discovered how Python generators can streamline workflows that depend on sequential completion. In my original approach, I collected all articles in an array (all_articles) before processing them, which forced the script to wait until every scrape finished before sending anything to Google Sheets. Refactoring to use generators means each article is processed immediately after it’s scraped, eliminating the need to store everything upfront. This taught me two key things:
 
 - Natural Sequencing: Generators inherently wait for one action (like scraping an article) to complete before yielding the result and moving to the next. This ensured data flowed smoothly into Google Sheets without manual batching.
-- Responsive Execution: Unlike lists, generators don’t hold all items in memory at once. While my primary goal wasn’t memory optimization, I noticed the script felt more responsive—articles appeared in Sheets incrementally, and interruptions didn’t waste prior work.
+- Responsive Execution: Unlike lists, generators don’t always hold all items in memory. While my primary goal wasn’t memory optimization, I noticed the script felt more responsive—articles appeared in Sheets incrementally, and interruptions didn’t waste prior work.
 
 The change simplified my code by removing temporary storage and made the process feel more deliberate, as if guiding each article step-by-step from source to destination.
