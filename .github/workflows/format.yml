@@ -31,10 +31,19 @@ jobs:
         run: |
           make format
 
-      - name: Commit and push changes
+      - name: Git config
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes
+        run: |
           git add .
-          git commit -m "Automatically formatted code with Ruff" || echo "No changes to commit"
-          git push origin HEAD:${{ github.head_ref }}
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          else
+            git commit -m "ci: auto-format code with Ruff"
+            git push orign HEAD:${{ github.head_ref }}
+          fi
