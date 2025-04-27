@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [main]
     paths: [main.py, utils/**]
+  push:
+    branches: [main]
+    paths: [main.py, utils/**]
 
 jobs:
   ruff:
