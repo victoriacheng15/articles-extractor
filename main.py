@@ -41,7 +41,9 @@ async def process_provider(fetcher, provider, articles_sheet, existing_titles):
             else soup.find_all(element_args)
         )
 
-        for article_info in get_articles(elements, handler["extractor"], existing_titles):
+        for article_info in get_articles(
+            elements, handler["extractor"], existing_titles
+        ):
             append_article(articles_sheet, article_info)
 
     except Exception as e:

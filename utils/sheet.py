@@ -21,7 +21,6 @@ def get_client():
     return gspread.authorize(creds)
 
 
-
 def get_worksheet(client, sheet_id, sheet_name):
     """
     Opens and returns a specific worksheet by name.
@@ -79,6 +78,3 @@ def append_article(sheet, article_info, log_func=print):
     link = article_info[2]
     log_func(f"==>\n{title} - {date}\n{link}\n")
     # sheet.append_row(list(article_info))
-
-
-
