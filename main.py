@@ -1,7 +1,14 @@
 import logging
 import asyncio
 from utils.get_page import PageFetcher
-from utils.sheet import articles_sheet, get_all_providers, send_articles_sheet
+from utils.sheet import (
+    get_client,
+    get_worksheet,
+    get_all_providers,
+    get_all_titles,
+    append_article,
+    SHEET_ID,
+)
 from utils.extractors import provider_dict, get_articles
 from utils.format_date import current_time
 
@@ -9,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-async def process_provider(fetcher, provider):
+async def process_provider(fetcher, provider, articles_sheet, existing_titles):
     """Process a single provider asynchronously"""
     provider_name = provider["name"]
     provider_url = provider["url"]
@@ -34,26 +41,29 @@ async def process_provider(fetcher, provider):
             else soup.find_all(element_args)
         )
 
-        for article_info in get_articles(elements, handler["extractor"]):
-            send_articles_sheet(article_info)
+        for article_info in get_articles(
+            elements, handler["extractor"], existing_titles
+        ):
+            append_article(articles_sheet, article_info)
 
     except Exception as e:
         logger.error(f"Error processing {provider_name}: {str(e)}")
 
 
 async def async_main(timestamp):
-    """Async version of main logic"""
+    client = get_client()
+    articles_sheet = get_worksheet(client, SHEET_ID, "articles")
+    providers_sheet = get_worksheet(client, SHEET_ID, "providers")
+
+    existing_titles = get_all_titles(articles_sheet)
+    providers = get_all_providers(providers_sheet)
     fetcher = PageFetcher()
-    providers = get_all_providers()
 
-    # Process providers sequentially (one at a time)
     for provider in providers:
-        await process_provider(fetcher, provider)
+        await process_provider(fetcher, provider, articles_sheet, existing_titles)
 
-    # Final sheet operations
     articles_sheet.sort((1, "des"))
     articles_sheet.update_cell(1, 6, f"Updated at\n{timestamp}")
-
     await fetcher.close()
 
 

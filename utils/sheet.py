@@ -8,67 +8,73 @@ SHEET_ID = os.environ.get("SHEET_ID")
 scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
 
-def get_creds():
+def get_creds_path():
     """
     Returns the path to the credentials.json file.
     """
     return os.path.join(os.path.dirname(__file__), "..", "credentials.json")
 
 
-def get_sheet(sheet_name):
+def get_client():
+    creds_path = get_creds_path()
+    creds = Credentials.from_service_account_file(creds_path, scopes=scopes)
+    return gspread.authorize(creds)
+
+
+def get_worksheet(client, sheet_id, sheet_name):
     """
-    Given a sheet name, returns the corresponding worksheet object.
+    Opens and returns a specific worksheet by name.
 
     Args:
-        sheet_name (str): The name of the sheet to retrieve.
+        client (gspread.Client): The authenticated gspread client.
+        sheet_id (str): The ID of the Google Sheet.
+        sheet_name (str): The name of the worksheet to open.
 
     Returns:
-        gspread.models.Worksheet: The worksheet object for the given sheet name.
+        gspread.models.Worksheet: The worksheet object
     """
-    creds = get_creds()
-    creds = Credentials.from_service_account_file(creds, scopes=scopes)
-    client = gspread.authorize(creds)
-    sheet = client.open_by_key(SHEET_ID)
+    sheet = client.open_by_key(sheet_id)
     return sheet.worksheet(sheet_name)
 
 
-articles_sheet = get_sheet("articles")
-providers_sheet = get_sheet("providers")
-
-
-def get_all_titles():
+def get_all_titles(articles_sheet):
     """
-    Retrieves all titles from the 'articles' sheet, excluding the header row.
+    Retrieves all article titles from the 'articles' sheet, excluding the header.
+
+    Args:
+        articles_sheet (gspread.models.Worksheet): The worksheet for articles.
 
     Returns:
-        tuple: A tuple containing all titles from the 'articles' sheet.
+        tuple: All titles in the sheet, as a tuple of strings.
     """
     all_titles = articles_sheet.get_all_values()[1:]
     return tuple(row[1] for row in all_titles)
 
 
-existing_titles = get_all_titles()
-
-
-def send_articles_sheet(article_info):
+def get_all_providers(providers_sheet):
     """
-    Appends a new row to the 'articles' sheet with the provided article information.
+    Retrieves all provider data from the 'providers' sheet.
 
     Args:
-        article_info (tuple): A tuple containing the article information in the order (date, title, author).
+        providers_sheet (gspread.models.Worksheet): The worksheet for providers.
+
+    Returns:
+        list: List of dicts, each representing one row (provider info).
+    """
+    return providers_sheet.get_all_records()
+
+
+def append_article(sheet, article_info, log_func=print):
+    """
+    Appends a new article row to the given sheet and logs it.
+
+    Args:
+        sheet (gspread.models.Worksheet): The worksheet to update.
+        article_info (tuple): The article data as (date, title, link, source).
+        log_func (function, optional): Function used to log output. Defaults to print.
     """
     date = article_info[0]
     title = article_info[1]
     link = article_info[2]
-    print(f"==>\n{title} - {date}\n{link}\n")
-    articles_sheet.append_row(list(article_info))
-
-
-def get_all_providers():
-    """
-    Retrieves all records from the 'providers' sheet.
-
-    Returns:
-        list: A list of dictionaries, where each dictionary represents a row in the 'providers' sheet.
-    """
-    return providers_sheet.get_all_records()
+    log_func(f"==>\n{title} - {date}\n{link}\n")
+    # sheet.append_row(list(article_info))

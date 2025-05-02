@@ -2,7 +2,6 @@ import re
 import logging
 from datetime import datetime
 from utils.format_date import clean_and_convert_date
-from utils.sheet import existing_titles
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -113,7 +112,7 @@ def extract_shopify_articles(article):
     return (date, title, link, "shopify")
 
 
-def get_articles(elements, extract_func):
+def get_articles(elements, extract_func, existing_titles):
     """
     Extracts articles from a given provider.
 
