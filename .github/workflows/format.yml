@@ -45,5 +45,5 @@ jobs:
             exit 0
           else
             git commit -m "ci: auto-format code with Ruff"
-            git push orign HEAD:${{ github.head_ref }}
+            git push origin HEAD:${{ github.head_ref }}
           fi
