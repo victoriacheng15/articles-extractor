@@ -3,38 +3,59 @@ import asyncio
 import logging
 import time
 from bs4 import BeautifulSoup
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+def init_fetcher_state():
+    """
+    Initialize the fetcher state with last request time, request interval, and an HTTP client.
+    
+    Returns:
+        dict: A dictionary containing the fetcher state.
+    """
+    return {
+        "last_request_time": 0.0,
+        "request_interval": 1.0,
+        "client": httpx.AsyncClient(timeout=30.0, http2=True),
+    }
 
-class PageFetcher:
-    def __init__(self):
-        self.last_request_time = 0
-        self.request_interval = 1.0
-        self.client = httpx.AsyncClient(timeout=30.0, http2=True)
+async def fetch_page(state, url):
+    """
+    Fetch and parse a webpage with rate limiting.
 
-    async def get_page(self, url: str) -> Optional[BeautifulSoup]:
-        """Fetch and parse a webpage with rate limiting"""
-        # Rate limiting
-        elapsed = time.time() - self.last_request_time
-        if elapsed < self.request_interval:
-            await asyncio.sleep(self.request_interval - elapsed)
+    Args:
+        state (dict): Current fetcher state.
+        url (str): URL to fetch.
 
-        try:
-            response = await self.client.get(url)
-            self.last_request_time = time.time()
+    Returns:
+        tuple: (BeautifulSoup object or None, updated state)
+    """
+    elapsed = time.time() - state["last_request_time"]
+    if elapsed < state["request_interval"]:
+        await asyncio.sleep(state["request_interval"] - elapsed)
 
-            if response.status_code == 200:
-                return BeautifulSoup(response.text, "html.parser")
+    try:
+        response = await state["client"].get(url)
+        state["last_request_time"] = time.time()
 
-            logger.error(f"HTTP {response.status_code} from {url}")
-            return None
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, "html.parser")
+            return soup, state
 
-        except Exception as e:
-            logger.error(f"Error fetching {url}: {str(e)}")
-            return None
+        logger.error(f"HTTP {response.status_code} from {url}")
+        return None, state
 
-    async def close(self):
-        await self.client.aclose()
+    except Exception as e:
+        logger.error(f"Error fetching {url}: {str(e)}")
+        return None, state
+    
+
+async def close_fetcher(state):
+    """
+    Close the HTTP client stored in the state.
+
+    Args:
+        state (dict): Fetcher state containing the client.
+    """
+    await state["client"].aclose()
