@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from utils.get_page import PageFetcher
+from utils.get_page import init_fetcher_state, fetch_page, close_fetcher
 from utils.sheet import (
     get_client,
     get_worksheet,
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-async def process_provider(fetcher, provider, articles_sheet, existing_titles):
+async def process_provider(fetcher_state, provider, articles_sheet, existing_titles):
     """Process a single provider asynchronously"""
     provider_name = provider["name"]
     provider_url = provider["url"]
@@ -30,9 +30,9 @@ async def process_provider(fetcher, provider, articles_sheet, existing_titles):
         return
 
     try:
-        soup = await fetcher.get_page(provider_url)
+        soup, fetcher_state = await fetch_page(fetcher_state, provider_url)
         if not soup:
-            return
+            return fetcher_state
 
         element_args = handler["element"]()
         elements = (
@@ -57,14 +57,15 @@ async def async_main(timestamp):
 
     existing_titles = get_all_titles(articles_sheet)
     providers = get_all_providers(providers_sheet)
-    fetcher = PageFetcher()
+
+    fetcher_state = init_fetcher_state()
 
     for provider in providers:
-        await process_provider(fetcher, provider, articles_sheet, existing_titles)
+        await process_provider(fetcher_state, provider, articles_sheet, existing_titles)
 
     articles_sheet.sort((1, "des"))
     articles_sheet.update_cell(1, 6, f"Updated at\n{timestamp}")
-    await fetcher.close()
+    await close_fetcher(fetcher_state)
 
 
 def main(timestamp):
