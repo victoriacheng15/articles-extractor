@@ -7,10 +7,11 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 def init_fetcher_state():
     """
     Initialize the fetcher state with last request time, request interval, and an HTTP client.
-    
+
     Returns:
         dict: A dictionary containing the fetcher state.
     """
@@ -19,6 +20,7 @@ def init_fetcher_state():
         "request_interval": 1.0,
         "client": httpx.AsyncClient(timeout=30.0, http2=True),
     }
+
 
 async def fetch_page(state, url):
     """
@@ -49,7 +51,7 @@ async def fetch_page(state, url):
     except Exception as e:
         logger.error(f"Error fetching {url}: {str(e)}")
         return None, state
-    
+
 
 async def close_fetcher(state):
     """

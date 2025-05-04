@@ -57,7 +57,7 @@ async def async_main(timestamp):
 
     existing_titles = get_all_titles(articles_sheet)
     providers = get_all_providers(providers_sheet)
-    
+
     fetcher_state = init_fetcher_state()
 
     for provider in providers:
