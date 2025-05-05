@@ -1,4 +1,4 @@
-.PHONY: install update format lint run up logs down
+.PHONY: install update format run up logs down
 
 install:
 	python -m pip install -r requirements.txt
