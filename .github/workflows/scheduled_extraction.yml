@@ -28,7 +28,7 @@ jobs:
         run: |
           echo '${{ secrets.CREDENTIALS }}' > credentials.json
 
-      - name: Verify credentials
+      - name: Verify credentials.json
         run: |
           if [ -f credentials.json ]; then
             echo "Credentials file exists."
