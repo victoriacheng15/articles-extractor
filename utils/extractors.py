@@ -126,8 +126,9 @@ def get_articles(elements, extract_func, existing_titles):
     for article in elements:
         try:
             article_info = extract_func(article)
+            title = article_info[1]
             # article_info tuple now: (date, title, link, source)
-            if article_info[1] not in existing_titles:
+            if title not in existing_titles:
                 yield article_info
         except Exception as e:
             logger.error(f"Skipping an article due to error: {e}")

@@ -45,10 +45,10 @@ def get_all_titles(articles_sheet):
         articles_sheet (gspread.models.Worksheet): The worksheet for articles.
 
     Returns:
-        tuple: All titles in the sheet, as a tuple of strings.
+        set: A set of all titles for O(1) lookup.
     """
     all_titles = articles_sheet.get_all_values()[1:]
-    return tuple(row[1] for row in all_titles)
+    return {row[1] for row in all_titles}
 
 
 def get_all_providers(providers_sheet):
