@@ -22,13 +22,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          make init
+          make install
 
       - name: Create credentials.json
         run: |
           echo '${{ secrets.CREDENTIALS }}' > credentials.json
 
-      - name: Verify credentials
+      - name: Verify credentials.json
         run: |
           if [ -f credentials.json ]; then
             echo "Credentials file exists."
