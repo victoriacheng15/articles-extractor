@@ -23,13 +23,11 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
-        run: |
-          make init
+      - name: Install Ruff
+        run: pip install ruff
 
       - name: Run Ruff formatter
-        run: |
-          make format
+        run: make format
 
       - name: Git config
         run: |
