@@ -1,10 +1,16 @@
 import re
 import logging
+import sys
 from datetime import datetime
 from utils.format_date import clean_and_convert_date
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+# Configure logging to write to stdout for log file capture
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
 
 
 def extract_fcc_articles(article):
