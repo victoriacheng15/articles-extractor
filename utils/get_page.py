@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 # Configure logging to write to stdout for log file capture
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stdout
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stdout,
 )
 
 
