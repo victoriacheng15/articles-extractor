@@ -37,14 +37,14 @@ def get_worksheet(client: gspread.Client, sheet_id: str, sheet_name: str) -> Wor
 
     Returns:
         Worksheet: The worksheet object
-        
+
     Raises:
         ValueError: If sheet_id or sheet_name is empty
         gspread.exceptions.SpreadsheetNotFound: If the sheet doesn't exist
     """
     if not sheet_id or not sheet_name:
         raise ValueError("sheet_id and sheet_name cannot be empty")
-    
+
     sheet = client.open_by_key(sheet_id)
     return sheet.worksheet(sheet_name)
 
@@ -76,7 +76,9 @@ def get_all_providers(providers_sheet: Worksheet) -> List[Dict[str, Any]]:
     return providers_sheet.get_all_records()
 
 
-def append_article(sheet: Worksheet, article_info: tuple, log_func: Callable = print) -> None:
+def append_article(
+    sheet: Worksheet, article_info: tuple, log_func: Callable = print
+) -> None:
     """
     Appends a new article row to the given sheet and logs it.
 

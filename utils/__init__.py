@@ -43,7 +43,7 @@ from .constants import (
 __all__ = [
     # Sheet operations
     "get_client",
-    "get_worksheet", 
+    "get_worksheet",
     "get_all_providers",
     "get_all_titles",
     "append_article",
@@ -60,7 +60,7 @@ __all__ = [
     # Constants
     "ARTICLES_WORKSHEET",
     "PROVIDERS_WORKSHEET",
-    "DEFAULT_REQUEST_INTERVAL", 
+    "DEFAULT_REQUEST_INTERVAL",
     "DEFAULT_TIMEOUT",
     "GOOGLE_SHEETS_SCOPES",
 ]

@@ -58,12 +58,12 @@ async def process_provider(fetcher_state, provider, articles_sheet, existing_tit
         ):
             append_article(articles_sheet, article_info)
             articles_found += 1
-        
+
         logger.info(f"Processed {provider_name}: {articles_found} new articles found")
 
     except Exception as e:
         logger.error(f"Error processing {provider_name}: {str(e)}", exc_info=True)
-    
+
     return fetcher_state
 
 
