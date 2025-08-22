@@ -41,7 +41,7 @@ jobs:
         id: generate-log
         run: |
           LOG_FILE="extraction-log-$(date +%Y-%m-%d).txt"
-          make run > "$LOG_FILE"
+          make run > "$LOG_FILE" 2>&1
           echo "Log saved to $LOG_FILE"
           echo "LOG_FILE=$LOG_FILE" >> "$GITHUB_OUTPUT"
         env:

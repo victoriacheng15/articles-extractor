@@ -1,4 +1,5 @@
 import logging
+import sys
 import asyncio
 from utils import (
     # Sheet operations
@@ -23,7 +24,12 @@ from utils import (
 )
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+# Configure logging to write to stdout so it gets captured in log files
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stdout,
+)
 
 
 async def process_provider(fetcher_state, provider, articles_sheet, existing_titles):

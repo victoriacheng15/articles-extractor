@@ -10,7 +10,7 @@ format:
 	ruff format main.py utils
 
 run:
-	python main.py
+	python main.py 2>&1
 
 up:
 	docker compose up --build
