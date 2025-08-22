@@ -3,6 +3,7 @@ import asyncio
 import logging
 import time
 from bs4 import BeautifulSoup
+from .constants import DEFAULT_REQUEST_INTERVAL, DEFAULT_TIMEOUT
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -17,8 +18,8 @@ def init_fetcher_state():
     """
     return {
         "last_request_time": 0.0,
-        "request_interval": 1.0,
-        "client": httpx.AsyncClient(timeout=30.0, http2=True),
+        "request_interval": DEFAULT_REQUEST_INTERVAL,
+        "client": httpx.AsyncClient(timeout=DEFAULT_TIMEOUT, http2=True),
     }
 
 

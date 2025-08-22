@@ -23,6 +23,7 @@ The workflow uses commands defined in the [Makefile](./Makefile) for installing 
 The Format Workflow automatically checks and fixes Python code style using Ruff. It runs when a pull request is made to the main branch or when code is pushed directly to the main branch. It looks at files like `main.py` and anything inside the `utils/` folder.
 
 Steps it does:
+
 - Checks out the code from the pull request.
 - Sets up Python 3.10.
 - Installs project dependencies (using make init).
@@ -32,9 +33,11 @@ Steps it does:
 [Format workflow](.github/workflows/format.yml)
 
 ###  Extraction Workflow:
+
 The Extraction Workflow automatically runs every day at 6:00 AM UTC. It scrapes articles and sends the data to the Google Sheet. It installs dependencies, creates a credentials.json file from GitHub secrets, runs the extraction script, and uploads a log file as a GitHub Action artifact. You can also manually trigger the workflow using the "Run workflow" button on GitHub.
 
 Steps it does:
+
 - Checks out the repository code.
 - Sets up Python 3.10.
 - Installs project dependencies (using make init).

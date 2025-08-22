@@ -1,16 +1,26 @@
 import logging
 import asyncio
-from utils.get_page import init_fetcher_state, fetch_page, close_fetcher
-from utils.sheet import (
+from utils import (
+    # Sheet operations
     get_client,
     get_worksheet,
     get_all_providers,
     get_all_titles,
     append_article,
     SHEET_ID,
+    # Web scraping
+    init_fetcher_state,
+    fetch_page,
+    close_fetcher,
+    # Article extraction
+    provider_dict,
+    get_articles,
+    # Date utilities
+    current_time,
+    # Constants
+    ARTICLES_WORKSHEET,
+    PROVIDERS_WORKSHEET,
 )
-from utils.extractors import provider_dict, get_articles
-from utils.format_date import current_time
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +42,7 @@ async def process_provider(fetcher_state, provider, articles_sheet, existing_tit
     try:
         soup, fetcher_state = await fetch_page(fetcher_state, provider_url)
         if not soup:
+            logger.warning(f"Failed to fetch page for {provider_name}")
             return fetcher_state
 
         element_args = handler["element"]()
@@ -41,19 +52,25 @@ async def process_provider(fetcher_state, provider, articles_sheet, existing_tit
             else soup.find_all(element_args)
         )
 
+        articles_found = 0
         for article_info in get_articles(
             elements, handler["extractor"], existing_titles
         ):
             append_article(articles_sheet, article_info)
+            articles_found += 1
+
+        logger.info(f"Processed {provider_name}: {articles_found} new articles found")
 
     except Exception as e:
-        logger.error(f"Error processing {provider_name}: {str(e)}")
+        logger.error(f"Error processing {provider_name}: {str(e)}", exc_info=True)
+
+    return fetcher_state
 
 
 async def async_main(timestamp):
     client = get_client()
-    articles_sheet = get_worksheet(client, SHEET_ID, "articles")
-    providers_sheet = get_worksheet(client, SHEET_ID, "providers")
+    articles_sheet = get_worksheet(client, SHEET_ID, ARTICLES_WORKSHEET)
+    providers_sheet = get_worksheet(client, SHEET_ID, PROVIDERS_WORKSHEET)
 
     existing_titles = get_all_titles(articles_sheet)
     providers = get_all_providers(providers_sheet)
