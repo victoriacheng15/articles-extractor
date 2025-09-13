@@ -90,5 +90,5 @@ def append_article(
     date = article_info[0]
     title = article_info[1]
     link = article_info[2]
-    log_func(f"==>\n{title} - {date}\n{link}\n")
+    log_func(f"==> {title} - {date}\n{link}\n")
     sheet.append_row(list(article_info))
