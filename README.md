@@ -1,6 +1,14 @@
 # Article Extractor
 
-Article Extractor is a Python application that automatically scrapes blog articles—such as titles, URLs, and published dates—from platforms like freeCodeCamp, Substack, GitHub Engineering, and Shopify Engineering. The collected data is then organized and stored in a Google Sheet, making it easy to browse, filter, or reference later. This project helps streamline content gathering without needing to visit each site manually.
+Articles Extractor is a Python application that automatically collects blog articles — including titles, URLs, and published dates — from multiple platforms such as freeCodeCamp, Substack, GitHub Engineering, and Shopify Engineering. The collected data is organized into a Google Sheet, so you can browse, filter, or reference articles from a single place without visiting each site manually.
+
+The tool supports multiple execution methods:
+
+- Manual runs via CLI
+- Scheduled runs with GitHub Actions or cron/Docker
+- Remote execution via Raspberry Pi
+
+Designed with scalability in mind, it’s easy to add additional sources or modify the export format. This project demonstrates automation, API integration, and practical workflow improvement for personal or professional use.
 
 ## Getting Started
 
