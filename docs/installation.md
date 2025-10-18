@@ -52,12 +52,12 @@ cd articles-extractor
 
   | name        | element (CSS selector/class)                        | url                                         |
   |-------------|-----------------------------------------------------|----------------------------------------------|
-  | freecodecamp| article                                             | https://www.freecodecamp.org/news/           |
-  | github      | article                                             | https://github.blog/category/engineering/    |
-  | shopify     | article                                             | https://shopify.engineering/latest          |
-  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | https://[your-substack].substack.com/archive |
-  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | https://[your-substack].substack.com/archive |
-  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | https://[your-substack].substack.com/archive |
+  | freecodecamp| article                                             | <https://www.freecodecamp.org/news/>           |
+  | github      | article                                             | <https://github.blog/category/engineering/>    |
+  | shopify     | article                                             | <https://shopify.engineering/latest>          |
+  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | <https://[your-substack].substack.com/archive> |
+  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | <https://[your-substack].substack.com/archive> |
+  | substack    | pencraft pc-display-flex pc-flexDirection-column pc-gap-4 | <https://[your-substack].substack.com/archive> |
 
   **Note**: Replace `[your-substack]` with your actual Substack domain.
 
@@ -75,23 +75,27 @@ Choose **one** of these methods to run the app:
 
 Run the app directly on your machine using Python.
 
+**Quick Setup**:
+
 ```bash
-# Create and activate virtual environment (recommended)
 python3 -m venv venv
-
 source venv/bin/activate  # Linux/Mac
-
 # venv\Scripts\activate   # Windows
+```
 
-# Install dependencies and run
+**Install and Run**:
+Refer to the [Makefile](../Makefile) for available commands:
+
+```bash
+make install   # Install dependencies
+make run       # Run the extraction script
+```
+
+Or run directly:
+
+```bash
 pip install -r requirements.txt
-
 python3 main.py
-
-# Alternative using Makefile
-make install
-
-make run
 ```
 
 ---
@@ -100,10 +104,12 @@ make run
 
 Deploy using Docker and schedule with cron. Perfect for Raspberry Pi, NAS, or any always-on machine.
 
-**Run with Docker**:
+Refer to the [Makefile](../Makefile) for Docker commands:
 
 ```bash
-make up && make logs && make down
+make up       # Start Docker container
+make logs     # View container logs
+make down     # Stop Docker container
 ```
 
 **Schedule with cron**:
