@@ -51,148 +51,101 @@ articles-extractor/
 
 ### 1. **Main Entry Point** (`main.py`)
 
-The orchestration hub that coordinates the entire extraction process.
-
-**Key Responsibilities:**
-
-- Initialize logging
-- Fetch providers from Google Sheet
-- Get list of existing article titles (for deduplication)
-- Process each provider asynchronously
-- Update the sheet with timestamp
-
-**Key Functions:**
-
-- `async_main()` - Async orchestrator
-- `process_provider()` - Process a single provider
-- `main()` - Sync wrapper for async code
+Orchestrates the entire extraction process. Coordinates fetching providers,
+deduplication, and article processing.
 
 ### 2. **Google Sheets Module** (`utils/sheet.py`)
 
-Handles all interactions with the Google Sheets API.
-
-**Key Responsibilities:**
-
-- Authenticate with Google Sheets
-- Read provider configurations from the sheet
-- Fetch existing article titles for deduplication
-- Append new articles to the sheet
-- Sort and update metadata
-
-**Key Functions:**
-
-- `get_client()` - Authenticate and return gspread client
-- `get_worksheet()` - Get a specific worksheet by name
-- `get_all_providers()` - Read provider configs from sheet
-- `get_all_titles()` - Get existing article titles
-- `append_article()` - Add new article to sheet
+Handles all Google Sheets API interactions—authentication, reading providers,
+storing articles, and maintaining data.
 
 ### 3. **Web Fetching Module** (`utils/get_page.py`)
 
-Manages HTTP requests and page fetching with respect to rate limits.
+Manages HTTP requests with rate limiting (1 second between requests, 30-second timeout).
+Handles page fetching and connection cleanup.
 
-**Key Responsibilities:**
+### 4. **Article Extractors** (`utils/extractors.py`)
 
-- Initialize and maintain HTTP client state
-- Fetch web pages with error handling
-- Respect request intervals (rate limiting)
-- Handle timeouts and connection errors
-- Gracefully close connections
+Provider-specific HTML parsers. Supports freeCodeCamp, GitHub, Shopify, and Substack.
+Each extractor handles deduplication and error handling independently.
 
-**Key Functions:**
+### 5. **Utilities** (`utils/format_date.py`, `utils/constants.py`)
 
-- `init_fetcher_state()` - Create HTTP client state
-- `fetch_page()` - Fetch and parse HTML from URL
-- `close_fetcher()` - Clean up resources
-
-**Rate Limiting:**
-
-- Default request interval: 1.0 second
-- Default timeout: 30 seconds
-
-### 4. **Article Extractors Module** (`utils/extractors.py`)
-
-Provider-specific HTML parsers that extract article information.
-
-**Supported Providers:**
-
-| Provider     | CSS Element | Extracted Fields                |
-|-------------|-------------|------------------------------|
-| freeCodeCamp | `article`   | Title, Link, Date, Source    |
-| GitHub Blog  | `article`   | Title, Link, Date, Source    |
-| Shopify      | `article`   | Title, Link, Date, Source    |
-| Substack     | Custom div  | Title, Link, Date, Source    |
-
-**Key Functions:**
-
-- `extract_fcc_articles()` - Parse freeCodeCamp articles
-- `extract_github_articles()` - Parse GitHub blog articles
-- `extract_shopify_articles()` - Parse Shopify engineering articles
-- `extract_substack_articles()` - Parse Substack newsletters
-- `provider_dict()` - Map providers to their extractors
-- `get_articles()` - Extract articles and deduplicate
-
-**Error Handling:**
-
-- Each extractor uses `@extractor_error_handler` decorator
-- Errors are logged but don't stop processing
-- Non-matching articles are skipped
-
-### 5. **Date/Time Utilities** (`utils/format_date.py`)
-
-Handles date parsing and formatting.
-
-**Key Functions:**
-
-- `current_time()` - Get current date and time
-- `clean_and_convert_date()` - Normalize date formats to YYYY-MM-DD
-
-### 6. **Constants** (`utils/constants.py`)
-
-Configuration values used throughout the app.
-
-**Key Constants:**
-
-- `ARTICLES_WORKSHEET` - Name of the articles sheet
-- `PROVIDERS_WORKSHEET` - Name of the providers sheet
-- `DEFAULT_REQUEST_INTERVAL` - Rate limiting delay
-- `DEFAULT_TIMEOUT` - HTTP request timeout
-- `GOOGLE_SHEETS_SCOPES` - API permissions
+Date parsing/formatting and configuration constants used throughout the app.
 
 ## Data Models
 
-### Provider Configuration
+```mermaid
+classDiagram
+    class Provider {
+        +string name
+        +string element
+        +string url
+    }
+    
+    class Article {
+        +string date
+        +string title
+        +string link
+        +string source
+    }
+    
+    class GoogleSheet {
+        +Worksheet providers
+        +Worksheet articles
+    }
+    
+    GoogleSheet "1" --> "*" Provider : stores
+    GoogleSheet "1" --> "*" Article : stores
+    Provider --> Article : generates
+```
 
-Stored in Google Sheet's `providers` worksheet:
+**Provider Schema** (Google Sheet `providers` worksheet):
 
-| name        | element (CSS selector) | url                          |
-|-------------|------------------------|------------------------------|
-| freecodecamp| article                | <https://www.freecodecamp.org/news/> |
-| github      | article                | <https://github.blog/>      |
-| shopify     | article                | <https://shopify.engineering/> |
-| substack    | [custom selector]      | <https://yourname.substack.com/archive> |
+- `name`: Provider identifier (e.g., "freecodecamp", "github")
+- `element`: CSS selector to find articles on the page
+- `url`: Website URL to scrape
 
-### Article Data
+**Article Schema** (Google Sheet `articles` worksheet):
 
-Stored in Google Sheet's `articles` worksheet:
-
-| Date       | Title         | Link           | Source     |
-|------------|---------------|----------------|------------|
-| 2024-10-18 | Article Title | https://...    | freeCodeCamp |
+- `date`: Publication date (YYYY-MM-DD format)
+- `title`: Article title
+- `link`: Full URL to the article
+- `source`: Provider name
 
 ## Processing Flow
 
-1. **Initialize** → Load config, setup logging, authenticate with Google
-2. **Fetch Providers** → Read provider list from Google Sheet
-3. **Get Existing Titles** → Read all article titles for deduplication
-4. **Process Each Provider** (asynchronously):
-   - Fetch the provider's webpage
-   - Parse HTML using Beautiful Soup
-   - Extract articles using provider-specific extractor
-   - Filter out duplicates (by title)
-   - Append new articles to Google Sheet
-5. **Finalize** → Sort articles, update timestamp, close connections
-6. **Log Results** → Report articles found per provider
+```mermaid
+flowchart TD
+    Start["🚀 Start"]
+    Init["Initialize<br/>Setup logging & auth"]
+    GetProviders["Fetch Providers<br/>from Google Sheet"]
+    GetTitles["Get Existing Titles<br/>for deduplication"]
+    
+    Start --> Init --> GetProviders --> GetTitles
+    
+    Process["Process Each Provider"]
+    Skip["⏭️ Skip"]
+    Fetch["Fetch Webpage"]
+    Parse["Parse HTML<br/>Beautiful Soup"]
+    Extract["Extract Articles<br/>Provider-specific parser"]
+    CheckDup{"Duplicate<br/>check?"}
+    Append["Append to<br/>Google Sheet"]
+    
+    GetTitles --> Process
+    Skip --> Process
+    Process --> Fetch --> Parse --> Extract --> CheckDup
+    CheckDup -->|Yes| Skip
+    CheckDup -->|No| Append --> Process
+    
+    AllDone["All providers<br/>processed?"]
+    Sort["Sort Articles<br/>by date"]
+    Update["Update Timestamp"]
+    Log["Log Results"]
+    Complete["✅ Complete"]
+    
+    Process -->|Yes| AllDone --> Sort --> Update --> Log --> Complete
+```
 
 ## Dependencies
 
@@ -232,34 +185,6 @@ The app uses a multi-layered error handling strategy:
 4. **API errors** - Logged with full traceback
 
 All errors are written to stdout for capture in logs.
-
-## Extensibility
-
-### Adding a New Provider
-
-1. **Add HTML parser** in `utils/extractors.py`:
-
-   ```python
-   @extractor_error_handler("NewProvider")
-   def extract_newprovider_articles(article):
-       title = article.find(...).get_text().strip()
-       link = article.find(...).get("href")
-       date = article.find(...).get("datetime")
-       return (date, title, link, "newprovider")
-   ```
-
-2. **Add to provider dictionary** in the same file:
-
-   ```python
-   "newprovider": {
-       "element": lambda: "css_selector",
-       "extractor": extract_newprovider_articles
-   }
-   ```
-
-3. **Add to Google Sheet** providers worksheet with the CSS selector and URL
-
-4. **Test** by running the app manually
 
 ## Logging
 
