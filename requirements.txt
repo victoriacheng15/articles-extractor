@@ -2,7 +2,7 @@ anyio==4.13.0
 beautifulsoup4==4.14.3
 cachetools==7.0.5
 certifi==2026.2.25
-charset-normalizer==3.4.5
+charset-normalizer==3.4.9
 click==8.3.1
 coverage==7.14.3
 dnspython==2.8.0
